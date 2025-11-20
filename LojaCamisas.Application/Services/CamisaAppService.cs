@@ -1,29 +1,69 @@
-﻿using LojaCamisas.Application.Interfaces;
+﻿using AutoMapper;
+using LojaCamisas.Application.Interfaces;
 using LojaCamisas.Application.ViewModels;
 using LojaCamisas.Domain.Entities;
 using LojaCamisas.Domain.Interfaces;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LojaCamisas.Application.Services
 {
     public class CamisaAppService : ICamisaAppService
     {
         private readonly ICamisaRepository _camisaRepository;
+        private readonly IMarcaRepository _marcaRepository;
+        private readonly IMapper _mapper;
 
-        public CamisaAppService(ICamisaRepository camisaRepository)
+        public CamisaAppService(
+            ICamisaRepository camisaRepository,
+            IMarcaRepository marcaRepository,
+            IMapper mapper)
         {
             _camisaRepository = camisaRepository;
+            _marcaRepository = marcaRepository;
+            _mapper = mapper;
         }
 
-        public async Task AddAsync(CamisaViewModel camisaViewModel)
+        public async Task<IEnumerable<CamisaViewModel>> GetAllAsync()
         {
-            var camisa = new Camisa
-            {
-                Time = camisaViewModel.Time,
-                Temporada = camisaViewModel.Temporada,
-                Preco = camisaViewModel.Preco,
-                QuantidadeEstoque = camisaViewModel.QuantidadeEstoque
-            };
+            var camisas = await _camisaRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<CamisaViewModel>>(camisas);
+        }
+
+        public async Task<CamisaCreateEditViewModel> GetByIdAsync(int id)
+        {
+            var camisa = await _camisaRepository.GetByIdAsync(id);
+            var vm = _mapper.Map<CamisaCreateEditViewModel>(camisa);
+
+            await CarregarMarcas(vm);
+
+            return vm;
+        }
+
+        public async Task<CamisaCreateEditViewModel> GetViewModelForCreation()
+        {
+            var vm = new CamisaCreateEditViewModel();
+            await CarregarMarcas(vm);
+            return vm;
+        }
+
+        public async Task<CamisaCreateEditViewModel> GetViewModelForUpdate(int id)
+        {
+            return await GetByIdAsync(id);
+        }
+
+        public async Task CreateAsync(CamisaCreateEditViewModel model)
+        {
+            var camisa = _mapper.Map<Camisa>(model);
             await _camisaRepository.AddAsync(camisa);
+        }
+
+        public async Task UpdateAsync(CamisaCreateEditViewModel model)
+        {
+            var camisa = _mapper.Map<Camisa>(model);
+            await _camisaRepository.UpdateAsync(camisa);
         }
 
         public async Task DeleteAsync(int id)
@@ -31,46 +71,15 @@ namespace LojaCamisas.Application.Services
             await _camisaRepository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<CamisaViewModel>> GetAllAsync()
+        private async Task CarregarMarcas(CamisaCreateEditViewModel vm)
         {
-            var camisas = await _camisaRepository.GetAllAsync();
-            return camisas.Select(c => new CamisaViewModel
+            var marcas = await _marcaRepository.GetAllAsync();
+
+            vm.Marcas = marcas.Select(m => new SelectListItem
             {
-                Id = c.Id,
-                Time = c.Time,
-                Temporada = c.Temporada,
-                Preco = c.Preco,
-                QuantidadeEstoque = c.QuantidadeEstoque
-            });
-        }
-
-        public async Task<CamisaViewModel> GetByIdAsync(int id)
-        {
-            var camisa = await _camisaRepository.GetByIdAsync(id);
-            if (camisa == null) return null;
-
-            return new CamisaViewModel
-            {
-                Id = camisa.Id,
-                Time = camisa.Time,
-                Temporada = camisa.Temporada,
-                Preco = camisa.Preco,
-                QuantidadeEstoque = camisa.QuantidadeEstoque
-            };
-        }
-
-        public async Task UpdateAsync(CamisaViewModel camisaViewModel)
-        {
-            var camisa = await _camisaRepository.GetByIdAsync(camisaViewModel.Id);
-            if (camisa != null)
-            {
-                camisa.Time = camisaViewModel.Time;
-                camisa.Temporada = camisaViewModel.Temporada;
-                camisa.Preco = camisaViewModel.Preco;
-                camisa.QuantidadeEstoque = camisaViewModel.QuantidadeEstoque;
-
-                await _camisaRepository.UpdateAsync(camisa);
-            }
+                Value = m.Id.ToString(),
+                Text = m.Nome
+            }).ToList();
         }
     }
 }

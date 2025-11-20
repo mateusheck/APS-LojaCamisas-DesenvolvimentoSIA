@@ -2,48 +2,40 @@
 using LojaCamisas.Domain.Interfaces;
 using LojaCamisas.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LojaCamisas.Infrastructure.Repositories
 {
-    public class CamisaRepository : ICamisaRepository
+    public class CamisaRepository : Repository<Camisa>, ICamisaRepository
     {
-        private readonly AppDbContext _context;
-
-        public CamisaRepository(AppDbContext context)
+        public CamisaRepository(AppDbContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task AddAsync(Camisa camisa)
+        public override async Task<IEnumerable<Camisa>> GetAllAsync()
         {
-            await _context.Camisas.AddAsync(camisa);
-            await _context.SaveChangesAsync();
+            return await _dbSet
+                .Include(c => c.Marca)
+                .ToListAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public override async Task<Camisa?> GetByIdAsync(int id)
         {
-            var camisa = await _context.Camisas.FindAsync(id);
-            if (camisa != null)
-            {
-                _context.Camisas.Remove(camisa);
-                await _context.SaveChangesAsync();
-            }
+            return await _dbSet
+                .Include(c => c.Marca)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IEnumerable<Camisa>> GetAllAsync()
+        public async Task<IEnumerable<Camisa>> BuscarAsync(string termo)
         {
-            return await _context.Camisas.ToListAsync();
-        }
-
-        public async Task<Camisa> GetByIdAsync(int id)
-        {
-            return await _context.Camisas.FindAsync(id);
-        }
-
-        public async Task UpdateAsync(Camisa camisa)
-        {
-            _context.Entry(camisa).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            return await _dbSet
+                .Include(c => c.Marca)
+                .Where(c =>
+                    c.Nome.Contains(termo) ||
+                    c.Descricao.Contains(termo))
+                .ToListAsync();
         }
     }
 }

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<LojaCamisas.Application.ViewModels.CamisaViewModel>
+
+<a asp-action="Create" class="btn btn-success mb-3">
+    + Criar nova camisa
+</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Marca</th>
+            <th>Preço</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var camisa in Model)
+        {
+            <tr>
+                <td>@camisa.Nome</td>
+                <td>@camisa.Descricao</td>
+                <td>@camisa.MarcaNome</td>
+                <td>@camisa.Preco.ToString("C")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@camisa.Id">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@camisa.Id">Detalhes</a> |
+                    <a asp-action="Delete" asp-route-id="@camisa.Id">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-info">Nenhuma camisa encontrada.</p>
+}

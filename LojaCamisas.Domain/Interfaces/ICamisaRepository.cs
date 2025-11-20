@@ -1,13 +1,11 @@
 ﻿using LojaCamisas.Domain.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LojaCamisas.Domain.Interfaces
 {
-    public interface ICamisaRepository
+    public interface ICamisaRepository : IRepository<Camisa>
     {
-        Task<Camisa> GetByIdAsync(int id);
-        Task<IEnumerable<Camisa>> GetAllAsync();
-        Task AddAsync(Camisa camisa);
-        Task UpdateAsync(Camisa camisa);
-        Task DeleteAsync(int id);
+        Task<IEnumerable<Camisa>> BuscarAsync(string termo);
     }
 }
