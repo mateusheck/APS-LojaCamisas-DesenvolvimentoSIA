@@ -18,7 +18,6 @@ namespace LojaCamisas.Web.Controllers
             _marcaAppService = marcaAppService;
         }
 
-        // LISTAGEM
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -26,7 +25,6 @@ namespace LojaCamisas.Web.Controllers
             return View(camisas);
         }
 
-        // BUSCAR (AJAX)
         public async Task<IActionResult> Buscar(string termo)
         {
             var camisas = await _camisaAppService.GetAllAsync();
@@ -39,7 +37,6 @@ namespace LojaCamisas.Web.Controllers
             return PartialView("_ListaCamisasPartial", camisas);
         }
 
-        // CREATE GET
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -48,7 +45,6 @@ namespace LojaCamisas.Web.Controllers
             return View(vm);
         }
 
-        // CREATE POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CamisaCreateEditViewModel camisaViewModel)
@@ -63,7 +59,6 @@ namespace LojaCamisas.Web.Controllers
             return View(camisaViewModel);
         }
 
-        // EDIT GET
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -74,7 +69,6 @@ namespace LojaCamisas.Web.Controllers
             return View(vm);
         }
 
-        // EDIT POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CamisaCreateEditViewModel camisaViewModel)
@@ -91,7 +85,6 @@ namespace LojaCamisas.Web.Controllers
             return View(camisaViewModel);
         }
 
-        // DETAILS (USA CamisaViewModel)
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -103,7 +96,6 @@ namespace LojaCamisas.Web.Controllers
             return View(item);
         }
 
-        // DELETE GET (USA CamisaViewModel)
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -115,7 +107,6 @@ namespace LojaCamisas.Web.Controllers
             return View(item);
         }
 
-        // DELETE POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -124,7 +115,6 @@ namespace LojaCamisas.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Preenche dropdown de Marcas
         private async Task PreencherMarcas(CamisaCreateEditViewModel vm)
         {
             var marcas = await _marcaAppService.GetAllAsync();

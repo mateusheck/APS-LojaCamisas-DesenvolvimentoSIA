@@ -19,7 +19,6 @@ namespace LojaCamisas.Infrastructure.Data
 
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-            // Data Seeding (com objetos anônimos — recomendado)
             builder.Entity<Marca>().HasData(
                 new { Id = 1, Nome = "Adidas" },
                 new { Id = 2, Nome = "Nike" },

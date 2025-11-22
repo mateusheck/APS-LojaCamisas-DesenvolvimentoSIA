@@ -8,17 +8,13 @@ namespace LojaCamisas.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Marca> builder)
         {
-            // Define a chave primária
             builder.HasKey(m => m.Id);
 
-            // Mapeia a propriedade Nome
             builder.Property(m => m.Nome).HasMaxLength(150).IsRequired();
 
-            // Configura o relacionamento One-to-Many
-            // Uma Marca tem muitas Camisas, e Camisa tem uma Marca.
-            builder.HasMany(m => m.Camisas!) // A coleção Camisas
-                   .WithOne(c => c.Marca!)   // Mapeada para a propriedade Marca na Camisa
-                   .HasForeignKey(c => c.MarcaId) // Usando a chave estrangeira MarcaId
+            builder.HasMany(m => m.Camisas!) 
+                   .WithOne(c => c.Marca!)   
+                   .HasForeignKey(c => c.MarcaId) 
                    .IsRequired();
         }
     }

@@ -9,7 +9,6 @@ namespace LojaCamisas.Domain.Entities
 
         public ICollection<Camisa> Camisas { get; private set; } = new List<Camisa>();
 
-        // Construtor público padrão para Mapster
         public Marca()
         {
             Nome = string.Empty;

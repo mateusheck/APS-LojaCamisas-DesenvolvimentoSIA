@@ -2,7 +2,6 @@
 {
     public class Camisa
     {
-        // Construtor padrão (necessário para Mapster e EF)
         public Camisa() { }
 
         public int Id { get; set; }

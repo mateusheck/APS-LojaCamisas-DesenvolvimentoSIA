@@ -8,14 +8,11 @@ namespace LojaCamisas.Application.Mapping
     {
         public static void RegisterMappings()
         {
-            // Camisa <-> CamisaCreateEditViewModel
             TypeAdapterConfig<Camisa, CamisaCreateEditViewModel>.NewConfig().TwoWays();
 
-            // Camisa <-> CamisaViewModel
             TypeAdapterConfig<Camisa, CamisaViewModel>.NewConfig()
                 .Map(dest => dest.MarcaNome, src => src.Marca.Nome);
 
-            // Marca <-> MarcaViewModel (se usar)
             TypeAdapterConfig<Marca, MarcaViewModel>.NewConfig().TwoWays();
         }
     }
